@@ -1,8 +1,11 @@
 package DanceHub.Controller;
 
 import DanceHub.Service.CoursService;
-import DanceHub.entity.Cours;
+import DanceHub.dto.ApiMapper;
+import DanceHub.dto.CoursRequest;
+import DanceHub.dto.CoursResponse;
 import DanceHub.entity.Niveau;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,58 +21,49 @@ public class CoursController {
         this.coursService = coursService;
     }
 
-    // POST /api/cours
     @PostMapping
-    public ResponseEntity<Cours> creer(@RequestBody Cours cours) {
+    public ResponseEntity<CoursResponse> creer(@Valid @RequestBody CoursRequest cours) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(coursService.creerCours(cours));
+                .body(ApiMapper.toCoursResponse(coursService.creerCours(cours)));
     }
 
-    // GET /api/cours
     @GetMapping
-    public ResponseEntity<List<Cours>> listerTous() {
-        return ResponseEntity.ok(coursService.listerTous());
+    public ResponseEntity<List<CoursResponse>> listerTous() {
+        return ResponseEntity.ok(coursService.listerTous().stream().map(ApiMapper::toCoursResponse).toList());
     }
 
-    // GET /api/cours/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Cours> trouverParId(@PathVariable Long id) {
-        return ResponseEntity.ok(coursService.trouverParId(id));
+    public ResponseEntity<CoursResponse> trouverParId(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiMapper.toCoursResponse(coursService.trouverParId(id)));
     }
 
-    // GET /api/cours/disponibles
     @GetMapping("/disponibles")
-    public ResponseEntity<List<Cours>> disponibles() {
-        return ResponseEntity.ok(coursService.coursDisponibles());
+    public ResponseEntity<List<CoursResponse>> disponibles() {
+        return ResponseEntity.ok(coursService.coursDisponibles().stream().map(ApiMapper::toCoursResponse).toList());
     }
 
-    // GET /api/cours/niveau/{niveau}
     @GetMapping("/niveau/{niveau}")
-    public ResponseEntity<List<Cours>> parNiveau(@PathVariable Niveau niveau) {
-        return ResponseEntity.ok(coursService.trouverParNiveau(niveau));
+    public ResponseEntity<List<CoursResponse>> parNiveau(@PathVariable Niveau niveau) {
+        return ResponseEntity.ok(coursService.trouverParNiveau(niveau).stream().map(ApiMapper::toCoursResponse).toList());
     }
 
-    // GET /api/cours/recherche?nom=salsa
     @GetMapping("/recherche")
-    public ResponseEntity<List<Cours>> rechercher(@RequestParam String nom) {
-        return ResponseEntity.ok(coursService.rechercherParNom(nom));
+    public ResponseEntity<List<CoursResponse>> rechercher(@RequestParam String nom) {
+        return ResponseEntity.ok(coursService.rechercherParNom(nom).stream().map(ApiMapper::toCoursResponse).toList());
     }
 
-    // GET /api/cours/{id}/places
     @GetMapping("/{id}/places")
     public ResponseEntity<Integer> placesDisponibles(@PathVariable Long id) {
         return ResponseEntity.ok(coursService.placesDisponibles(id));
     }
 
-    // PUT /api/cours/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<Cours> modifier(
+    public ResponseEntity<CoursResponse> modifier(
             @PathVariable Long id,
-            @RequestBody Cours cours) {
-        return ResponseEntity.ok(coursService.modifierCours(id, cours));
+            @Valid @RequestBody CoursRequest cours) {
+        return ResponseEntity.ok(ApiMapper.toCoursResponse(coursService.modifierCours(id, cours)));
     }
 
-    // DELETE /api/cours/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> supprimer(@PathVariable Long id) {
         coursService.supprimerCours(id);

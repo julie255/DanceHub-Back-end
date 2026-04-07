@@ -1,6 +1,12 @@
 package DanceHub.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,40 +15,48 @@ import java.util.List;
 public class Cours {
 
     @Id
+    @Column(name = "id_cours")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_cours;
+    private Long idCours;
 
     @Column(nullable = false)
+    @NotBlank(message = "Le nom du cours est obligatoire")
     private String nomCours;
 
     private String description;
 
     @Column(nullable = false)
+    @NotNull(message = "L'horaire est obligatoire")
     private LocalDateTime horaire;
 
+    @Min(value = 1, message = "La duree doit etre superieure a 0")
     private int dureeMinutes;
 
     @Column(nullable = false)
+    @Min(value = 1, message = "La capacite doit etre superieure a 0")
     private int capaciteMax;
 
     private String salle;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @NotNull(message = "Le niveau est obligatoire")
     private Niveau niveau;
 
     @ManyToOne
     @JoinColumn(name = "professeur_id")
+    @JsonIgnoreProperties({"cours"})
     private Professeurs professeurs;
 
     @OneToMany(mappedBy = "cours", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Inscription> inscriptions;
 
-    public Long getId_cours() {
-        return id_cours;
+    public Long getIdCours() {
+        return idCours;
     }
 
-    public void setId_cours(Long id_cours) {
-        this.id_cours = id_cours;
+    public void setIdCours(Long idCours) {
+        this.idCours = idCours;
     }
 
     public String getNomCours() {

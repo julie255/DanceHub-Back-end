@@ -1,24 +1,35 @@
 package DanceHub.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
 @Entity
 @Table(name = "professeurs")
-@Data
+@Getter
+@Setter
 public class Professeurs {
 
     @Id
+    @Column(name = "id_professeur")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_professeur;
+    private Long idProfesseur;
 
     @Column(nullable = false)
+    @NotBlank(message = "Le nom est obligatoire")
     private String nom;
 
     @Column(nullable = false)
+    @NotBlank(message = "Le prenom est obligatoire")
     private String prenom;
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "L'email est obligatoire")
+    @Email(message = "L'email doit etre valide")
     private String email;
 
     private String telephone;
@@ -30,5 +41,6 @@ public class Professeurs {
     private Utilisateur utilisateur;
 
     @OneToMany(mappedBy = "professeurs", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Cours> cours;
 }

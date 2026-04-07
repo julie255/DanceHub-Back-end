@@ -1,76 +1,51 @@
 package DanceHub.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.annotation.Role;
 
 @Entity
 @Table(name = "utilisateurs")
+@Getter
+@Setter
 public class Utilisateur {
 
     @Id
+    @Column(name = "id_utilisateur")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_utilisateur;
+    private Long idUtilisateur;
 
-    @Setter
     @Column(nullable = false)
+    @NotBlank(message = "Le nom est obligatoire")
     private String nom;
 
-    @Setter
     @Column(nullable = false)
+    @NotBlank(message = "Le prenom est obligatoire")
     private String prenom;
 
-    @Setter
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "L'email est obligatoire")
+    @Email(message = "L'email doit etre valide")
     private String email;
 
-    @Setter
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank(message = "Le mot de passe est obligatoire")
+    @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caracteres")
     private String password;
-    @Setter
+
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean actif = false;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
     public enum Role {
         ADMIN, PROFESSEUR, ELEVE
     }
-
-
-
-    public Long getId_utilisateur() {
-        return id_utilisateur;
-    }
-
-    public void setIdUtilisateur(Long id_utilisateur) {
-        this.id_utilisateur = id_utilisateur;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public boolean isActif() {
-        return actif;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
 }
